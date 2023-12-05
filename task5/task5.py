@@ -16,10 +16,29 @@ def main():
         lines = file.readlines()
 
         # Parse seeds
-        seeds = set(map(int, lines[0].split()[1:]))
+        seeds = list(map(int, lines[0].split()[1:]))
         _maps = build_data(lines[2:])
-        lowest_location = find_lowest_location(_maps, seeds)
-        print("Lowest location number: ", lowest_location)
+        print("Subtask1: Lowest location number: ", find_lowest_location(_maps, seeds))
+
+        '''
+        seed_to_soil_map = _maps[Maps.seed_to_soil.value]
+        seeds_ranges = set()
+        for i in range(0, len(seeds), 2):
+            _seed_start = seeds[i]
+            _seed_end = _seed_start + seeds[i + 1] - 1
+
+            for values in seed_to_soil_map.values():
+                source_start = values[1]
+                source_end = source_start + values[2] - 1
+
+                intersection_start = max(_seed_start, source_start)
+                intersection_end = min(_seed_end, source_end)
+                if intersection_start <= intersection_end:
+                    _range = range(max(_seed_start, source_start), min(_seed_end, source_end))
+                    seeds_ranges.update(set(_range))
+
+        print("Subtask2: Lowest location number: ", find_lowest_location(_maps, seeds_ranges))
+        '''
 
 
 def find_lowest_location(maps, seeds):
