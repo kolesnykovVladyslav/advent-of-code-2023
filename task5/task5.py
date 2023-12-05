@@ -17,10 +17,30 @@ def main():
 
         # Parse seeds
         seeds = set(map(int, lines[0].split()[1:]))
-
         _maps = build_data(lines[2:])
+        lowest_location = find_lowest_location(_maps, seeds)
+        print("Lowest location number: ", lowest_location)
 
-        print("Seeds: ", seeds)
+
+def find_lowest_location(maps, seeds):
+    source = seeds
+    successors = None
+    for _map in maps.values():
+        successors = []
+        for source_value in source:
+            successor = source_value
+            for key in _map:
+                values = _map[key]
+                source_start = values[1]
+                destination_start = values[0]
+                _range = values[2]
+                if source_start <= source_value < source_start + _range:
+                    successor = destination_start + (source_value - source_start)
+                    break
+            successors.append(successor)
+        source = successors
+
+    return min(successors)
 
 
 def build_data(lines):
