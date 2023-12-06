@@ -15,11 +15,9 @@ def main():
 
         print("Task 1: product=" + str(product))
 
-        time_list = list(map(int, lines[0].split()[1:]))
-        distances = list(map(int, lines[1].split()[1:]))
-        product2 = 1
-        for time, distance in zip(time_list, distances):
-            product2 *= get_ways_to_beat_record(time, distance)
+        time = int(lines[0].replace(" ", "").split(":")[1])
+        distance = int(lines[1].replace(" ", "").split(":")[1])
+        product2 = get_ways_to_beat_record(time, distance)
 
         print("Task 2: product=" + str(product2))
 
