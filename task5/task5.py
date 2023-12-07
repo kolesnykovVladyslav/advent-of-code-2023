@@ -19,26 +19,34 @@ def main():
         seeds = list(map(int, lines[0].split()[1:]))
         _maps = build_data(lines[2:])
         print("Subtask1: Lowest location number: ", find_lowest_location(_maps, seeds))
+        print("Subtask2: Lowest location number: ", find_lowest_location_b(_maps, seeds))
 
-        '''
-        seed_to_soil_map = _maps[Maps.seed_to_soil.value]
-        seeds_ranges = set()
-        for i in range(0, len(seeds), 2):
-            _seed_start = seeds[i]
-            _seed_end = _seed_start + seeds[i + 1] - 1
 
-            for values in seed_to_soil_map.values():
-                source_start = values[1]
-                source_end = source_start + values[2] - 1
-
-                intersection_start = max(_seed_start, source_start)
-                intersection_end = min(_seed_end, source_end)
-                if intersection_start <= intersection_end:
-                    _range = range(max(_seed_start, source_start), min(_seed_end, source_end))
-                    seeds_ranges.update(set(_range))
-
-        print("Subtask2: Lowest location number: ", find_lowest_location(_maps, seeds_ranges))
-        '''
+def find_lowest_location_b(maps, seeds):
+    seed_ranges = []
+    for i in range(0, len(seeds), 2):
+        seed_ranges.append((seeds[i], seeds[i] + seeds[i + 1]))
+    ranges_to_check = seed_ranges
+    for mapping in maps.values():
+        ranges = mapping.values()
+        _next = []
+        while len(ranges_to_check) > 0:
+            found = False
+            start_range, end_range = ranges_to_check.pop()
+            for destination, source, _range in ranges:
+                start_overlap = max(start_range, source)
+                end_overlap = min(end_range, source + _range)
+                if start_overlap < end_overlap:
+                    _next.append((start_overlap - source + destination, end_overlap - source + destination))
+                    found = True
+                    if start_overlap > start_range:
+                        ranges_to_check.append((start_range, start_overlap))
+                    if end_range > end_overlap:
+                        ranges_to_check.append((end_overlap, end_range))
+            if not found:
+                _next.append((start_range, end_range))
+        ranges_to_check = _next
+    return min(ranges_to_check)[0]
 
 
 def find_lowest_location(maps, seeds):
