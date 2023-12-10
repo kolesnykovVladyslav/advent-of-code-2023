@@ -26,10 +26,12 @@ def main():
         # start traverse through grid
         max_dist = 0
         queue = []
-        grid[start[0]][start[1]].distance = 0
+        # grid[start[0]][start[1]].distance = 0
         # queue.append(start)
         queue.append((start[0] - 1, start[1]))
         queue.append((start[0] + 1, start[1]))
+        grid[start[0] - 1][start[1]].distance = 1
+        grid[start[0] + 1][start[1]].distance = 1
 
         while len(queue) > 0:
             position = queue.pop(0)
@@ -56,7 +58,7 @@ def get_neighbours(grid, position):
 
     neighbours = []
     if pipe == "S":
-        neighbours = [(row - 1, column), (row + 1, column), (row, column - 1), (row, column + 1)]
+        neighbours = []
     elif pipe == "|":
         neighbours = [(row - 1, column), (row + 1, column)]
     elif pipe == "-":
@@ -70,12 +72,7 @@ def get_neighbours(grid, position):
     elif pipe == "F":
         neighbours = [(row, column + 1), (row + 1, column)]
 
-    valid_neighbours = []
-    for neighbour in neighbours:
-        if is_valid_neighbour(grid, neighbour):
-            valid_neighbours.append(neighbour)
-
-    return valid_neighbours
+    return neighbours
 
 
 def is_valid_neighbour(grid, neighbour_position):
