@@ -49,6 +49,36 @@ def main():
             "How many steps along the loop does it take to get from the starting position to the point farthest "
             "from the starting position? " + str(max_dist))
 
+        enclosed_count = 0
+        for i, row in enumerate(grid):
+            for j, node in enumerate(row):
+                if not node.is_visited():
+                    is_enclosed_left = False
+                    is_enclosed_right = False
+                    is_enclosed_above = False
+                    is_enclosed_below = False
+                    for i_neighbour in range(0, i):
+                        if grid[i_neighbour][j].is_visited():
+                            is_enclosed_left = True
+                            break
+                    for i_neighbour in range(i + 1, len(grid) - 1):
+                        if grid[i_neighbour][j].is_visited():
+                            is_enclosed_right = True
+                            break
+                    for j_neighbour in range(0, j):
+                        if grid[i][j_neighbour].is_visited():
+                            is_enclosed_above = True
+                            break
+                    for j_neighbour in range(j + 1, len(row)):
+                        if grid[i][j_neighbour].is_visited():
+                            is_enclosed_below = True
+                            break
+
+                    if is_enclosed_left and is_enclosed_right and is_enclosed_above and is_enclosed_below:
+                        enclosed_count += 1
+
+        print("How many tiles are enclosed by the loop? " + str(enclosed_count))
+
 
 def get_neighbours(grid, position):
     row = position[0]
