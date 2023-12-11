@@ -11,16 +11,44 @@ def main():
         solve_a(lines)
 
 
-def solve_a(lines):
-    space_map = build_space_map(lines)
-    galaxies_coordinates = []
+def solve_a(space_map):
+    space_width = len(space_map[0]) - 1
+    columns_with_no_galaxies = [True for _ in range(space_width)]
+    rows_with_no_galaxies = set()
+
+    # detect empty rows / columns
+    for i, line in enumerate(space_map):
+
+        if galaxy_symbol not in line:
+            rows_with_no_galaxies.add(i)
+
+        for j in range(space_width):
+            columns_with_no_galaxies[j] &= line[j] != galaxy_symbol
+
+    columns_with_no_galaxies = {i for i, has_no_galaxy in enumerate(columns_with_no_galaxies) if has_no_galaxy}
 
     # find galaxies
+    galaxies_coordinates = []
     for i, row in enumerate(space_map):
         for match in re.finditer(galaxy_symbol, row):
             j = match.start()
             coordinate = (i, j)
             galaxies_coordinates.append(coordinate)
+
+    # update coordinates
+    multiplier = 1000000
+    for ind, coordinate in enumerate(galaxies_coordinates):
+        x = coordinate[0]
+        y = coordinate[1]
+        for i in range(x):
+            if i in rows_with_no_galaxies:
+                x += multiplier - 1
+
+        for j in range(y):
+            if j in columns_with_no_galaxies:
+                y += multiplier - 1
+
+        galaxies_coordinates[ind] = (x, y)
 
     sum = 0
     for i, coordinate1 in enumerate(galaxies_coordinates):
@@ -30,29 +58,6 @@ def solve_a(lines):
             sum += distance
 
     print("What is the sum of these lengths? " + str(sum))
-
-
-def build_space_map(lines):
-    space_map = []
-    # expend space
-    space_width = len(lines[0]) - 1
-    column_has_no_galaxy = [True for _ in range(space_width)]
-    for line in lines:
-        for i in range(space_width):
-            column_has_no_galaxy[i] &= line[i] != galaxy_symbol
-
-        space_map.append(line)
-        if galaxy_symbol not in line:
-            space_map.append(line)
-    column_has_no_galaxy.reverse()
-    for j, has_no_galaxy in enumerate(column_has_no_galaxy):
-        index = space_width - j - 1
-        if has_no_galaxy:
-            for i in range(len(space_map)):
-                row = space_map[i]
-                space_map[i] = row[:index] + empty_symbol + row[index:]
-
-    return space_map
 
 
 if __name__ == "__main__":
