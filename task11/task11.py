@@ -8,10 +8,11 @@ def main():
     with open('input.txt', 'r') as file:
         lines = file.readlines()
 
-        solve_a(lines)
+        solve(lines, 2)
+        solve(lines, 1000000)
 
 
-def solve_a(space_map):
+def solve(space_map, multiplier):
     space_width = len(space_map[0]) - 1
     columns_with_no_galaxies = [True for _ in range(space_width)]
     rows_with_no_galaxies = set()
@@ -28,6 +29,22 @@ def solve_a(space_map):
     columns_with_no_galaxies = {i for i, has_no_galaxy in enumerate(columns_with_no_galaxies) if has_no_galaxy}
 
     # find galaxies
+    galaxies_coordinates = get_galaxies_coordinates(space_map)
+
+    # update coordinates
+    multiplier -= 1
+    for ind, coordinate in enumerate(galaxies_coordinates):
+        x = coordinate[0]
+        x += multiplier * len([i for i in rows_with_no_galaxies if i < x])
+        y = coordinate[1]
+        y += multiplier * len([j for j in columns_with_no_galaxies if j < y])
+        galaxies_coordinates[ind] = (x, y)
+
+    sum = get_sum_of_distances(galaxies_coordinates)
+    print("What is the sum of these lengths? " + str(sum))
+
+
+def get_galaxies_coordinates(space_map):
     galaxies_coordinates = []
     for i, row in enumerate(space_map):
         for match in re.finditer(galaxy_symbol, row):
@@ -35,29 +52,17 @@ def solve_a(space_map):
             coordinate = (i, j)
             galaxies_coordinates.append(coordinate)
 
-    # update coordinates
-    multiplier = 1000000
-    for ind, coordinate in enumerate(galaxies_coordinates):
-        x = coordinate[0]
-        y = coordinate[1]
-        for i in range(x):
-            if i in rows_with_no_galaxies:
-                x += multiplier - 1
+    return galaxies_coordinates
 
-        for j in range(y):
-            if j in columns_with_no_galaxies:
-                y += multiplier - 1
 
-        galaxies_coordinates[ind] = (x, y)
-
+def get_sum_of_distances(galaxies_coordinates):
     sum = 0
     for i, coordinate1 in enumerate(galaxies_coordinates):
         for j in range(i + 1, len(galaxies_coordinates)):
             coordinate2 = galaxies_coordinates[j]
             distance = abs(coordinate1[0] - coordinate2[0]) + abs(coordinate1[1] - coordinate2[1])
             sum += distance
-
-    print("What is the sum of these lengths? " + str(sum))
+    return sum
 
 
 if __name__ == "__main__":
