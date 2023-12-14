@@ -1,5 +1,4 @@
 import re
-from functools import cache
 
 direction = 0
 
@@ -7,27 +6,35 @@ direction = 0
 def main():
     with open("input.txt") as f:
         lines = [l for l in f.read().splitlines()]
+        solve_a(lines)
         solve_b(lines)
 
 
 def solve_a(grid):
     t_grid = rotate_left(tuple(grid))
     sum = count_load(t_grid)
-    print("what is the total load on the north support beams? " + str(int(sum)))
+    print("Part1: what is the total load on the north support beams? " + str(int(sum)))
 
 
 def solve_b(grid):
-    # 152173
-    cycles = 1000000000
-    steps = 1 + cycles * 4
-    t_grid = grid
-    for i in range(steps):
-        t_grid = rotate_left(tuple(t_grid))
+    i = 1
+    steps = 1000000000 * 4
+    t_grid = tuple(grid)
+    _cache = {}
+
+    while i < steps:
+        _hash = hash(t_grid)
+        if _hash in _cache:
+            cycle_length = i - _cache[_hash]
+            i += ((steps - i) // cycle_length) * cycle_length
+        _cache[_hash] = i
+        t_grid = tuple(rotate_left(t_grid))
+        i += 1
+
     sum = count_load(t_grid)
-    print("what is the total load on the north support beams? " + str(int(sum)))
+    print("Part2: what is the total load on the north support beams? " + str(int(sum)))
 
 
-@cache
 def rotate_left(grid):
     global direction
     grid = zip(*grid)
