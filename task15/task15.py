@@ -1,16 +1,35 @@
+import re
+from collections import OrderedDict
+
 direction = 0
 
 
 def main():
-    with open("input.txt") as f:
-        lines = [l for l in f.read().splitlines()]
-        solve_a(lines[0])
+    with open("test_input.txt") as f:
+        line = [l for l in f.read().splitlines()][0]
+        values = line.split(",")
+        solve_b(values)
+        solve_a(values)
 
 
-def solve_a(line):
-    values = line.split(",")
+def solve_b(values):
+    _sum = 0
+    boxes = [OrderedDict() for _ in range(256)]
+
+    for _str in values:
+        label = re.search(r"[a-z]*", _str).group()
+        box_number = get_hash(label)
+        if "-" in _str and label in boxes[box_number]:
+            boxes[box_number].pop(label)
+        elif "=" in _str:
+            focal_length = _str[-1]
+            boxes[box_number][label] = focal_length
+
+    print("Part2: What is the sum of the results? " + str(int(_sum)))
+
+
+def solve_a(values):
     _sum = sum([get_hash(_str) for _str in values])
-
     print("Part1: What is the sum of the results? " + str(int(_sum)))
 
 
