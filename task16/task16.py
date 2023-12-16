@@ -43,10 +43,15 @@ def solve_a(grid):
     energized_counter = 0
 
     while len(beams) > 0:
-        has_changed = False
         for beam in beams:
             x = beam.coordinate[0]
             y = beam.coordinate[1]
+
+            # remove beam if outside
+            if (x < 0 or width - 1 < x or y < 0 or height - 1 < y) and beam in beams:
+                beams.remove(beam)
+                continue
+
             node = grid[y][x]
 
             if not node.visited:
@@ -54,7 +59,6 @@ def solve_a(grid):
                 energized_counter += 1
 
             if not node.is_visited_direction(beam.direction):
-                has_changed = True
                 node.visited_directions.update({beam.direction})
             else:
                 beams.remove(beam)
@@ -95,14 +99,6 @@ def solve_a(grid):
             new_y = beam.coordinate[1] + (1 if beam.direction == Direction.down else 0)
             new_y -= 1 if beam.direction == Direction.up else 0
             beam.coordinate = (new_x, new_y)
-
-            # remove beam if outside
-            if (beam.coordinate[0] < 0 or width - 1 < beam.coordinate[0] or beam.coordinate[1] < 0
-                or height - 1 < beam.coordinate[1]) and beam in beams:
-                beams.remove(beam)
-        if not has_changed:
-            break
-
     print("Part1: How many tiles end up being energized? " + str(energized_counter))
 
 
