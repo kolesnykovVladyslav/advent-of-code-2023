@@ -29,11 +29,31 @@ class Node:
 def main():
     with open("input.txt") as f:
         lines = [l for l in f.read().splitlines()]
-        grid = []
-        for line in lines:
-            grid_line = [Node(char, False) for char in line]
-            grid.append(grid_line)
-        solve_a(grid)
+        solve_a(get_grid(lines))
+        solve_b(lines)
+
+
+def get_grid(lines):
+    grid = []
+    for line in lines:
+        grid_line = [Node(char, False) for char in line]
+        grid.append(grid_line)
+    return grid
+
+
+def solve_b(lines):
+    beams = []
+    grid = get_grid(lines)
+    for y in range(len(grid)):
+        beams.append(Beam((0, y), Direction.right))
+        beams.append(Beam((len(grid) - 1, y), Direction.left))
+
+    for x in range(len(grid[0])):
+        beams.append(Beam((x, len(grid) - 1), Direction.up))
+        beams.append(Beam((x, 0), Direction.down))
+
+    energized_counter = max([calculate_energized_cells(get_grid(lines), beam) for beam in beams])
+    print("Part2: How many tiles end up being energized? " + str(energized_counter))
 
 
 def solve_a(grid):
