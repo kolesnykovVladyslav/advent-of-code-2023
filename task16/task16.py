@@ -37,9 +37,15 @@ def main():
 
 
 def solve_a(grid):
+    beam = Beam((0, 0), Direction.right)
+    energized_counter = calculate_energized_cells(grid, beam)
+    print("Part1: How many tiles end up being energized? " + str(energized_counter))
+
+
+def calculate_energized_cells(grid, beam):
     width = len(grid[0])
     height = len(grid)
-    beams = [Beam((0, 0), Direction.right)]
+    beams = [beam]
     energized_counter = 0
 
     while len(beams) > 0:
@@ -99,7 +105,7 @@ def solve_a(grid):
             new_y = beam.coordinate[1] + (1 if beam.direction == Direction.down else 0)
             new_y -= 1 if beam.direction == Direction.up else 0
             beam.coordinate = (new_x, new_y)
-    print("Part1: How many tiles end up being energized? " + str(energized_counter))
+    return energized_counter
 
 
 if __name__ == "__main__":
