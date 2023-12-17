@@ -29,7 +29,7 @@ class Node:
 def main():
     with open("input.txt") as f:
         lines = [l for l in f.read().splitlines()]
-        solve_a(get_grid(lines))
+        solve_a(lines)
         solve_b(lines)
 
 
@@ -56,7 +56,8 @@ def solve_b(lines):
     print("Part2: How many tiles end up being energized? " + str(energized_counter))
 
 
-def solve_a(grid):
+def solve_a(lines):
+    grid = get_grid(lines)
     beam = Beam((0, 0), Direction.right)
     energized_counter = calculate_energized_cells(grid, beam)
     print("Part1: How many tiles end up being energized? " + str(energized_counter))
@@ -94,12 +95,10 @@ def calculate_energized_cells(grid, beam):
                 if beam.direction in (Direction.right, Direction.left):
                     beam.direction = Direction.down
                     beams.append(Beam((x, y - 1), Direction.up))
-                    has_changed = True
             elif node.char == "-":
                 if beam.direction in (Direction.up, Direction.down):
                     beam.direction = Direction.left
                     beams.append(Beam((x + 1, y), Direction.right))
-                    has_changed = True
             elif node.char == "/":
                 if beam.direction == Direction.right:
                     beam.direction = Direction.up
