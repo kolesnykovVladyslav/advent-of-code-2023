@@ -57,6 +57,7 @@ def main():
     with open("input.txt") as f:
         lines = [l for l in f.read().splitlines()]
         print("Part1: What is the least heat loss? " + str(get_least_heat_loss(lines, 0, 3)))
+        print("Part2: What is the least heat loss? " + str(get_least_heat_loss(lines, 4, 10)))
 
 
 if __name__ == "__main__":
