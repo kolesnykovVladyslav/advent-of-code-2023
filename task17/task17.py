@@ -1,64 +1,62 @@
-import heapq
 import sys
-from collections import defaultdict
+from heapq import heappush, heappop
+
+RIGHT = (0, 1)
+DOWN = (1, 0)
+LEFT = (0, -1)
+UP = (-1, 0)
 
 
-class Node:
-    def __init__(self, heat_loss: int):
-        self.heat_loss = heat_loss
-        self.visited = False
-        self.dist = sys.maxsize
-        self.dir_counter = defaultdict(lambda: 0, {})
+def get_left_right_neighbour(direction):
+    if direction in [RIGHT, LEFT]:
+        yield DOWN
+        yield UP
+    elif direction in [DOWN, UP]:
+        yield RIGHT
+        yield LEFT
+    else:  # start
+        yield RIGHT
+        yield DOWN
 
 
-def get_grid(lines):
-    grid = []
-    for line in lines:
-        grid_line = [Node(int(value)) for value in line]
-        grid.append(grid_line)
-    return grid
+def get_least_heat_loss(grid, _min, _max):
+    final_position = (len(grid) - 1, len(grid[0]) - 1)
+    heap = [(0, (0, 0), (0, 0))]
+    dist_map = {(0, 0): 0}
+    seen = set()
+    cost = 0
 
-
-def solve_a(lines):
-    grid = get_grid(lines)
-    height = len(grid)
-    width = len(grid[0])
-
-    grid[0][0].dist = 0
-    queue = [(grid[0][0].dist, 0, 0)]
-
-    while len(queue) > 0:
-        _, x, y = heapq.heappop(queue)
-        node = grid[y][x]
-        if node.visited:
+    while heap:
+        cost, position, direction = heappop(heap)
+        if position == final_position:
+            break
+        if (position, direction) in seen:
             continue
-        node.visited = True
-        # node.dir_counter.clear()
+        seen.add((position, direction))
 
-        # travers neighbours
-        for dx, dy in ((1, 0), (0, 1), (-1, 0), (0, -1)):
-            new_x = x + dx
-            new_y = y + dy
-            if 0 <= new_x < width and 0 <= new_y < height:
-                neighbour = grid[new_y][new_x]
-                if node.dist + neighbour.heat_loss < neighbour.dist:
-
-                    if node.dir_counter.get((dx, dy), 0) < 3:
-                        neighbour.dir_counter = dict(node.dir_counter)
-                        if (dx, dy) not in neighbour.dir_counter:
-                            neighbour.dir_counter.clear()
-                        neighbour.dir_counter[(dx, dy)] = neighbour.dir_counter.get((dx, dy), 0) + 1
-                        neighbour.dist = node.dist + neighbour.heat_loss
-                        heapq.heappush(queue, (neighbour.dist, new_x, new_y))
-
-    min_heat_loss_path = grid[height - 1][width - 1].dist - grid[0][0].heat_loss
-    print("Part1: What is the least heat loss it can incur? " + str(min_heat_loss_path))
+        x, y = position
+        for new_direction in get_left_right_neighbour(direction):
+            neighbour_cost = cost
+            dx, dy = new_direction
+            for i in range(1, _max + 1):
+                new_position = (x + i * dx, y + i * dy)
+                if new_position[0] < 0 or new_position[1] < 0 or new_position[0] >= (len(grid)) or new_position[1] >= (
+                        len(grid[0])):
+                    continue
+                neighbour_cost = neighbour_cost + int(grid[new_position[0]][new_position[1]])
+                if i >= _min:
+                    _pos = (new_position, (dx, dy))
+                    if dist_map.get(_pos, sys.maxsize) <= neighbour_cost:
+                        continue
+                    dist_map[_pos] = neighbour_cost
+                    heappush(heap, (neighbour_cost, new_position, new_direction))
+    return cost
 
 
 def main():
     with open("input.txt") as f:
         lines = [l for l in f.read().splitlines()]
-        solve_a(lines)
+        print("Part1: What is the least heat loss? " + str(get_least_heat_loss(lines, 0, 3)))
 
 
 if __name__ == "__main__":
