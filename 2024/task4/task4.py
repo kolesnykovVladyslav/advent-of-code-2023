@@ -6,12 +6,24 @@ def main():
         lines = file.readlines()
         for line in lines:
             grid.append(list(line))
-
         # task 1
         solve_part1()
-
         # task 2
-        # solve(lines)
+        solve_part2()
+
+
+def solve_part2():
+    xmas_count = 0
+    for i, row in enumerate(grid):
+        for j, char in enumerate(row):
+            xmas_count += int(char == "A" and is_xmas(i, j))
+    print("How many times does X-MAS appear? = " + str(xmas_count))
+
+
+def is_xmas(i, j):
+    diagonal1 = get_char_at_index(i - 1, j - 1) + get_char_at_index(i, j) + get_char_at_index(i + 1, j + 1)
+    diagonal2 = get_char_at_index(i - 1, j + 1) + get_char_at_index(i, j) + get_char_at_index(i + 1, j - 1)
+    return (diagonal1 == "MAS" or diagonal1 == "SAM") and (diagonal2 == "MAS" or diagonal2 == "SAM")
 
 
 def solve_part1():
@@ -19,10 +31,11 @@ def solve_part1():
     for i, row in enumerate(grid):
         for j, char in enumerate(row):
             if char == "X":
+                # XMAS
                 xmas_count += get_number_of_xmas_for_position(i, j, "MAS")
             if char == "S":
+                # XMAS reverse => SAMX
                 xmas_count += get_number_of_xmas_for_position(i, j, "AMX")
-
     print("How many times does XMAS appear? = " + str(xmas_count))
 
 
