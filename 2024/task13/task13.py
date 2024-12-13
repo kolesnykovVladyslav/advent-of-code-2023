@@ -39,18 +39,20 @@ def get_input(lines):
     return arrays
 
 
-def is_round(n):
-    return n % 1 < 0.1
+def is_round_and_positive(n):
+    return n % 1 < 0.1 or n % 1 > 0.99
 
 
-def solve(arrays):
+def solve(arrays, part_two=False):
     total_tokens = 0
-    for arr in arrays:
+    for i, arr in enumerate(arrays):
+        if part_two:
+            for a in arr:
+                a[2] += 10000000000000
         # a, b = solve_numpy(arr)
         a, b = solve_simpy(arr)
-
-        if 0 <= a <= 100 and is_round(a) and 0 <= b <= 100 and is_round(b):
-            total_tokens += 3 * round(a) + round(b)
+        if is_round_and_positive(a) and is_round_and_positive(b):
+            total_tokens += 3 * round(float(a)) + round(float(b))
     print("Total price = " + str(total_tokens))
 
 
@@ -61,7 +63,6 @@ def solve_numpy(arr):
 
 
 def solve_simpy(arr):
-    # Define the augmented matrix
     augmented_matrix = Matrix(arr)
     # Solve the system
     reduced_row_echelon_form = augmented_matrix.rref()[0]
@@ -73,7 +74,8 @@ def main():
     with open('input.txt', 'r') as file:
         lines = file.readlines()
         arrays = get_input(lines)
-        solve(arrays)
+        solve(arrays, False)
+        solve(arrays, True)
 
 
 if __name__ == "__main__":
