@@ -46,13 +46,13 @@ def print_map(robots):
                 line += "R"
             else:
                 line += "."
+        line += "\n"
         f.write(line)
 
 
 def solve2(lines):
-    # 6000
-    initial_steps = 6000
-    steps = 1000
+    initial_steps = 6500
+    steps = 200
     robots = []
     for line in lines:
         robots.append(get_input(line))
@@ -86,10 +86,7 @@ def solve2(lines):
             min_distance = distance
             min_step = initial_steps + step
             final_pos = robots.copy()
-        # print()
-        # print("----------------------------------" + str(step) + "----------------------------------")
-        # print_map(robots)
-    print(min_step, min_distance)
+    print(min_step + 1, min_distance)
     print_map(final_pos)
 
 
