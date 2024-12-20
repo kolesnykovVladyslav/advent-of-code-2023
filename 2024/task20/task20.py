@@ -3,6 +3,9 @@ from collections import defaultdict
 
 width = 0
 height = 0
+input_file = 'input.txt'
+at_least_dist = 100
+at_most_cheats = 20
 
 
 def get_input(lines):
@@ -26,7 +29,7 @@ def get_input(lines):
 
 
 def pos_in_bounds(pos):
-    return 0 <= pos[0] < width and 0 <= pos[1] < height
+    return 0 < pos[0] < width and 0 < pos[1] < height
 
 
 def solve(lines):
@@ -47,30 +50,32 @@ def solve(lines):
                 cell_to_dist[new_pos] = dist + 1
                 queue.append(new_pos)
 
-    cheats = get_all_cheats(cell_to_dist, path, walls)
+    cheats = get_all_cheats(cell_to_dist, path)
+    number_of_cheats = sum([cheats[cheat] for cheat in cheats if cheat >= at_least_dist])
 
-    number_of_cheats = sum([cheats[cheat] for cheat in cheats if cheat >= 100])
+    for cheat in sorted(cheats):
+        if cheat < at_least_dist:
+            continue
+        print(f"There are {cheats[cheat]} cheats that save {cheat} picoseconds")
     print(number_of_cheats)
-    # for cheat in cheats:
-    #    print(f"There are {cheats[cheat]} cheats that save {cheat} picoseconds")
 
 
-def get_all_cheats(cell_to_dist, path, walls):
+def get_all_cheats(cell_to_dist, path):
     cheats = defaultdict(lambda: 0)
-    for pos in path:
-        for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-            if (pos[0] + dx, pos[1] + dy) not in walls:
+    for i, pos1 in enumerate(path):
+        for pos2 in path[i + 2:]:
+            dist = abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+            if dist > at_most_cheats or cell_to_dist[pos2] - cell_to_dist[pos1] < at_least_dist:
                 continue
-            new_pos = (pos[0] + dx * 2, pos[1] + dy * 2)
-            if pos_in_bounds(new_pos) and new_pos not in walls and cell_to_dist[new_pos] > cell_to_dist[pos]:
-                diff = cell_to_dist[new_pos] - cell_to_dist[pos] - 2
-                cheats[diff] += 1
+
+            diff = cell_to_dist[pos2] - cell_to_dist[pos1] - dist
+            cheats[diff] += 1
     return cheats
 
 
 if __name__ == "__main__":
     start_time = time.time()
-    with open('input.txt', 'r') as file:
+    with open(input_file, 'r') as file:
         lines = file.readlines()
         solve(lines)
     print("--- %s seconds ---" % (time.time() - start_time))
